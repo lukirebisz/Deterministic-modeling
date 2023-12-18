@@ -17,3 +17,13 @@ result_matrix = np.zeros((100, 200))
 
 for key in areas_dict.keys():
     print(areas_dict[key])
+
+
+
+class Cat:
+  def __init__(self, resolution, areas_dict:dict):
+    self.resolution = resolution
+    self.areas_dict = areas_dict
+    
+
+cat1 = Cat([100, 200], areas_dict)
