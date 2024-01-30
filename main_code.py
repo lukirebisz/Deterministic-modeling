@@ -6,7 +6,22 @@ import matplotlib.gridspec as gridspec
 
 
 class Cat:
-    def __init__(self, resolution, areas_dict:dict, parameters:dict):
+    """A class used to represent a Cat, patterns of its skin which are calculated by the Gierer-Meinhardt model.
+    """
+    
+
+    def __init__(self, resolution:list, areas_dict:dict, parameters:dict):
+        """ The init function which sets values of variables:
+        
+        Args:
+            resolution (list): the resolution of full image,
+            areas_dict (dict): dictionary with names and coordinates of body parts,
+            parameters (dict): parameters of Gierer-Meinhardt model.
+
+
+        Moreover, the init function automatically calculates the solution of Gierer-Meinhardt model
+        and saves it as the variables matrices and total_matrices.
+        """
         self.resolution = resolution
         self.areas_dict = areas_dict
         self.parameters = parameters
@@ -21,6 +36,9 @@ class Cat:
 
 
     def create_total_matrices(self):
+        """ Function creates the total matrix from matrices of solutions for each body parts
+        and saves it as the variable total_matrices."""
+        
         x_max = self.resolution[0]
         y_max = self.resolution[1]
         vec_t = np.arange(0, self.parameters["T_max"], self.parameters["h_t"])
@@ -37,6 +55,11 @@ class Cat:
         
 
     def show_i_th_step(self, i: int):
+        """ Function creates the plot of i-th step of the solution of Gierer-Meinhardt model.
+
+        Args:
+            i (int): the index of solution
+        """
         x_max = self.resolution[0]
         y_max = self.resolution[1]
 
@@ -46,12 +69,46 @@ class Cat:
                 x_1 = max(tup[0] for tup in self.areas_dict[key])
                 y_0 = min(tup[1] for tup in self.areas_dict[key])
                 y_1 = max(tup[1] for tup in self.areas_dict[key])
-                total_matrix[(y_max-y_1):(y_max-y_0), (x_0):(x_1)] = self.matrices[key][i, :, :]
+                total_matrix[(y_max-y_1):(y_max-y_0), (x_0):(x_1)] = self.matrices[key][i, ::-1, :]
 
         plt.imshow(total_matrix, cmap = "YlOrBr")
 
+    def get_result_matrix(self):
+        """Function returns the last step of the solution of Gierer-Meinhardt model
+        in the plot coordinates (point (0,0) in the top left corner).
+
+        Returns:
+            list: Matrix of last step of the solution of Gierer-Meinhardt model.
+        """
+        x_max = self.resolution[0]
+        y_max = self.resolution[1]
+
+        total_matrix = np.zeros((y_max, x_max))
+        for key in self.areas_dict.keys():
+                x_0 = min(tup[0] for tup in self.areas_dict[key])
+                x_1 = max(tup[0] for tup in self.areas_dict[key])
+                y_0 = min(tup[1] for tup in self.areas_dict[key])
+                y_1 = max(tup[1] for tup in self.areas_dict[key])
+                total_matrix[(y_max-y_1):(y_max-y_0), (x_0):(x_1)] = self.matrices[key][-1, ::-1, :]
+
+        return total_matrix
+    
+    def get_all_result_matrices(self):
+        """Function returns all steps of the solution of Gierer-Meinhardt model.
+
+        Returns:
+            list: Matrix of solutions.
+        """
+        return self.total_matrices
+
 
     def get_variance(self):
+         """Function calculates the weighted arithmetic mean of variances with wieghts 
+         equal area of the appropriate body part (result matrix)
+
+         Returns:
+             float: weighted mean variance
+         """
          sum_variance = 0
          sum_areas = 0
 
@@ -75,6 +132,10 @@ class Cat:
 
 
     def GM_Neumann_2D(self):
+            """Function calculates the solution of Gierer-Meinhardt model using 
+            finite difference numerical scheme with homogeneous Neumann conditions
+            for each of the rectangle body parts separately.
+            """
             h_x = self.parameters["h_x"]
             h_y = self.parameters["h_y"]
             h_t = self.parameters["h_t"]
@@ -152,6 +213,12 @@ class Cat:
 
     
     def animation(self):
+        """Function creates the animation of the solutions of Gierer-Meinhardt model
+        in time.
+
+        Returns:
+            FuncAnimation: animation.
+        """
         x_max = self.resolution[0]
         y_max = self.resolution[1]
         x = np.arange(0, x_max, self.parameters["h_x"])
