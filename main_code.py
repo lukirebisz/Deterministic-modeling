@@ -174,7 +174,7 @@ class Cat:
         ax1.set_ylim((np.min(y), np.max(y)))
         ax1.set_xlabel("$x$")
         ax1.set_ylabel("$y$")
-        ax1.set_title("$a(x,y,t)$")
+        ax1.set_title("$a(x,y,t)$: intensity of the pigment")
 
 
         pcolormesh_d = ax1.pcolormesh(x, y, solution_a_cp[:,:,0].T, shading='gouraud', cmap = "YlOrBr")
