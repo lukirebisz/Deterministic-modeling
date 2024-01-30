@@ -75,79 +75,79 @@ class Cat:
 
 
     def GM_Neumann_2D(self):
-        h_x = self.parameters["h_x"]
-        h_y = self.parameters["h_y"]
-        h_t = self.parameters["h_t"]
-        rho = self.parameters["rho"]
-        mu_a = self.parameters["mu_a"]
-        mu_h = self.parameters["mu_h"]
-        D_a = self.parameters["D_a"]
-        D_h = self.parameters[ "D_h"]
-        rho_a = self.parameters["rho_a"]
-        rho_h = self.parameters["rho_h"]
-        T_max = self.parameters["T_max"]
-        a_0_func = lambda x, y: np.abs(np.random.random(x.shape))
-        h_0_func = lambda x, y: np.abs(np.random.random(x.shape))
-        g = lambda t: 0
-        
-        for key in self.areas_dict.keys():
-            x_0 = min(tup[0] for tup in self.areas_dict[key])
-            x_1 = max(tup[0] for tup in self.areas_dict[key])
-            y_0 = min(tup[1] for tup in self.areas_dict[key])
-            y_1 = max(tup[1] for tup in self.areas_dict[key])
+            h_x = self.parameters["h_x"]
+            h_y = self.parameters["h_y"]
+            h_t = self.parameters["h_t"]
+            rho = self.parameters["rho"]
+            mu_a = self.parameters["mu_a"]
+            mu_h = self.parameters["mu_h"]
+            D_a = self.parameters["D_a"]
+            D_h = self.parameters[ "D_h"]
+            rho_a = self.parameters["rho_a"]
+            rho_h = self.parameters["rho_h"]
+            T_max = self.parameters["T_max"]
+            c = self.parameters["c"]
+            a_0_func = lambda x, y: np.abs(np.random.random(x.shape))
+            h_0_func = lambda x, y: np.abs(np.random.random(x.shape))
+            g = lambda t: 0
+            
+            for key in self.areas_dict.keys():
+                x_0 = min(tup[0] for tup in self.areas_dict[key])
+                x_1 = max(tup[0] for tup in self.areas_dict[key])
+                y_0 = min(tup[1] for tup in self.areas_dict[key])
+                y_1 = max(tup[1] for tup in self.areas_dict[key])
 
 
-            x = np.arange(x_0, x_1, h_x)
-            y = np.arange(y_0, y_1, h_y)
+                x = np.arange(x_0, x_1, h_x)
+                y = np.arange(y_0, y_1, h_y)
 
-            vec_t = np.arange(0, T_max, h_t)
-            vec_x = np.meshgrid(x, y)[0]
-            vec_y = np.meshgrid(x, y)[1]
+                vec_t = np.arange(0, T_max, h_t)
+                vec_x = np.meshgrid(x, y)[0]
+                vec_y = np.meshgrid(x, y)[1]
 
-            result_matrix_a_0 = a_0_func(vec_x, vec_y)
-            result_matrix_a = np.zeros((len(vec_t), vec_y.shape[0], vec_x.shape[1]))
-            result_matrix_a[0, 1:-1, 1:-1] = result_matrix_a_0[1:-1, 1:-1]
-            result_matrix_a[0, 0, :] = result_matrix_a[0, 1, :] + h_x*g(0)
-            result_matrix_a[0, -1, :] = result_matrix_a[0, -2, :] + h_x*g(0)
-            result_matrix_a[0, :, 0] =  result_matrix_a[0, :, 1] + h_y*g(0)
-            result_matrix_a[0, :, -1] = result_matrix_a[0, :, -2] + h_y*g(0)
+                result_matrix_a_0 = a_0_func(vec_x, vec_y)
+                result_matrix_a = np.zeros((len(vec_t), vec_y.shape[0], vec_x.shape[1]))
+                result_matrix_a[0, 1:-1, 1:-1] = result_matrix_a_0[1:-1, 1:-1]
+                result_matrix_a[0, 0, :] = result_matrix_a[0, 1, :] + h_x*g(0)
+                result_matrix_a[0, -1, :] = result_matrix_a[0, -2, :] + h_x*g(0)
+                result_matrix_a[0, :, 0] =  result_matrix_a[0, :, 1] + h_y*g(0)
+                result_matrix_a[0, :, -1] = result_matrix_a[0, :, -2] + h_y*g(0)
 
-            result_matrix_h_0 = h_0_func(vec_x, vec_y)
-            result_matrix_h = np.zeros((len(vec_t), vec_y.shape[0], vec_x.shape[1]))
-            result_matrix_h[0, 1:-1, 1:-1] = result_matrix_h_0[1:-1, 1:-1]
-            result_matrix_h[0, 0, :] = result_matrix_h[0, 1, :] + h_x*g(0)
-            result_matrix_h[0, -1, :] = result_matrix_h[0, -2, :] + h_x*g(0)
-            result_matrix_h[0, :, 0] =  result_matrix_h[0, :, 1] + h_y*g(0)
-            result_matrix_h[0, :, -1] = result_matrix_h[0, :, -2] + h_y*g(0)
+                result_matrix_h_0 = h_0_func(vec_x, vec_y)
+                result_matrix_h = np.zeros((len(vec_t), vec_y.shape[0], vec_x.shape[1]))
+                result_matrix_h[0, 1:-1, 1:-1] = result_matrix_h_0[1:-1, 1:-1]
+                result_matrix_h[0, 0, :] = result_matrix_h[0, 1, :] + h_x*g(0)
+                result_matrix_h[0, -1, :] = result_matrix_h[0, -2, :] + h_x*g(0)
+                result_matrix_h[0, :, 0] =  result_matrix_h[0, :, 1] + h_y*g(0)
+                result_matrix_h[0, :, -1] = result_matrix_h[0, :, -2] + h_y*g(0)
 
 
-            for i in range(len(vec_t) - 1):
-                t = vec_t[i]
-                result_matrix_a[i+1, 0, :] = result_matrix_a[i+1, 1, :] + h_x*g(t)
-                result_matrix_a[i+1, -1, :] = result_matrix_a[i+1, -2, :] + h_x*g(t)
-                result_matrix_a[i+1, :, 0] =  result_matrix_a[i+1, :, 1] + h_y*g(t)
-                result_matrix_a[i+1, :, -1] = result_matrix_a[i+1, :, -2] + h_y*g(t)
+                for i in range(len(vec_t) - 1):
+                    t = vec_t[i]
+                    result_matrix_a[i+1, 0, :] = result_matrix_a[i+1, 1, :] + h_x*g(t)
+                    result_matrix_a[i+1, -1, :] = result_matrix_a[i+1, -2, :] + h_x*g(t)
+                    result_matrix_a[i+1, :, 0] =  result_matrix_a[i+1, :, 1] + h_y*g(t)
+                    result_matrix_a[i+1, :, -1] = result_matrix_a[i+1, :, -2] + h_y*g(t)
 
-                result_matrix_a[i+1, 1:-1, 1:-1] = result_matrix_a[i, 1:-1, 1:-1] + h_t*(D_a*((result_matrix_a[i, 2:, 1:-1] 
-                                + result_matrix_a[i, :-2, 1:-1] - 2*result_matrix_a[i, 1:-1, 1:-1])/h_x +
-                                + (result_matrix_a[i, 1:-1, 2:] + result_matrix_a[i, 1:-1, :-2] - 
-                                   2*result_matrix_a[i, 1:-1, 1:-1])/h_y)
-                                + rho*(result_matrix_a[i, 1:-1, 1:-1]**2)/result_matrix_h[i, 1:-1, 1:-1] -  
-                                mu_a*result_matrix_a[i, 1:-1, 1:-1] +  rho_a)
+                    result_matrix_a[i+1, 1:-1, 1:-1] = result_matrix_a[i, 1:-1, 1:-1] + h_t*(D_a*((result_matrix_a[i, 2:, 1:-1] 
+                                    + result_matrix_a[i, :-2, 1:-1] - 2*result_matrix_a[i, 1:-1, 1:-1])/h_x +
+                                    + (result_matrix_a[i, 1:-1, 2:] + result_matrix_a[i, 1:-1, :-2] - 
+                                    2*result_matrix_a[i, 1:-1, 1:-1])/h_y)
+                                    + rho*(result_matrix_a[i, 1:-1, 1:-1]**2)/(result_matrix_h[i, 1:-1, 1:-1] *(1 + c*result_matrix_a[i, 1:-1, 1:-1]**2)) -  
+                                    mu_a*result_matrix_a[i, 1:-1, 1:-1] +  rho_a)
 
-                result_matrix_h[i+1, 0, :] = result_matrix_h[i+1, 1, :] + h_x*g(t)
-                result_matrix_h[i+1, -1, :] = result_matrix_h[i+1, -2, :] + h_x*g(t)
-                result_matrix_h[i+1, :, 0] =  result_matrix_h[i+1, :, 1] + h_y*g(t)
-                result_matrix_h[i+1, :, -1] = result_matrix_h[i+1, :, -2] + h_y*g(t)
+                    result_matrix_h[i+1, 0, :] = result_matrix_h[i+1, 1, :] + h_x*g(t)
+                    result_matrix_h[i+1, -1, :] = result_matrix_h[i+1, -2, :] + h_x*g(t)
+                    result_matrix_h[i+1, :, 0] =  result_matrix_h[i+1, :, 1] + h_y*g(t)
+                    result_matrix_h[i+1, :, -1] = result_matrix_h[i+1, :, -2] + h_y*g(t)
 
-                result_matrix_h[i+1, 1:-1, 1:-1] = result_matrix_h[i, 1:-1, 1:-1] + h_t*(D_h*((result_matrix_h[i, 2:, 1:-1] 
-                                + result_matrix_h[i, :-2, 1:-1] - 2*result_matrix_h[i, 1:-1, 1:-1])/h_x +
-                                + (result_matrix_h[i, 1:-1, 2:] + result_matrix_h[i, 1:-1, :-2] - 
-                                   2*result_matrix_h[i, 1:-1, 1:-1])/h_y)
-                                + rho*(result_matrix_a[i, 1:-1, 1:-1]**2) - mu_h*result_matrix_h[i, 1:-1, 1:-1] + rho_h)
+                    result_matrix_h[i+1, 1:-1, 1:-1] = result_matrix_h[i, 1:-1, 1:-1] + h_t*(D_h*((result_matrix_h[i, 2:, 1:-1] 
+                                    + result_matrix_h[i, :-2, 1:-1] - 2*result_matrix_h[i, 1:-1, 1:-1])/h_x +
+                                    + (result_matrix_h[i, 1:-1, 2:] + result_matrix_h[i, 1:-1, :-2] - 
+                                    2*result_matrix_h[i, 1:-1, 1:-1])/h_y)
+                                    + rho*(result_matrix_a[i, 1:-1, 1:-1]**2) - mu_h*result_matrix_h[i, 1:-1, 1:-1] + rho_h)
 
-            self.matrices[key] = result_matrix_a[:, :, :]
-
+                self.matrices[key] = result_matrix_a[:, :, :]
 
 
     
@@ -195,5 +195,5 @@ class Cat:
         plt.rc('animation', html='jshtml')
         return anim
             
-
+            
 
